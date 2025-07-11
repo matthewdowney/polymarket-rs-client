@@ -4,7 +4,7 @@ use alloy_signer_local::PrivateKeySigner;
 pub use anyhow::{anyhow, Context, Result as ClientResult};
 use config::get_contract_config;
 use orders::OrderBuilder;
-use orders::SignedOrderRequest;
+pub use orders::SignedOrderRequest;
 use reqwest::header::HeaderName;
 use reqwest::Client;
 use reqwest::Method;
