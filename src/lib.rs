@@ -25,8 +25,8 @@ mod utils;
 
 pub use data::*;
 pub use eth_utils::EthSigner;
-pub use orders::SigType;
 use headers::{create_l1_headers, create_l2_headers};
+pub use orders::SigType;
 
 #[derive(Default)]
 pub struct ClobClient {
@@ -424,20 +424,15 @@ impl ClobClient {
         order_args: &OrderArgs,
         expiration: Option<u64>,
         extras: Option<ExtraOrderArgs>,
-        options: Option<&CreateOrderOptions>,
+        tick_size: Decimal,
+        neg_risk: bool,
     ) -> ClientResult<SignedOrderRequest> {
         let (_, chain_id) = self.get_l1_parameters();
 
-        let create_order_options = self
-            .get_filled_order_options(order_args.token_id.as_ref(), options)
-            .await?;
         let expiration = expiration.unwrap_or(0);
         let extras = extras.unwrap_or_default();
 
-        if !self.is_price_in_range(
-            order_args.price,
-            create_order_options.tick_size.expect("Should be filled"),
-        ) {
+        if !self.is_price_in_range(order_args.price, tick_size) {
             return Err(anyhow!("Price is not in range of tick_size"));
         }
 
@@ -449,7 +444,10 @@ impl ClobClient {
                 order_args,
                 expiration,
                 &extras,
-                create_order_options,
+                CreateOrderOptions {
+                    tick_size: Some(tick_size),
+                    neg_risk: Some(neg_risk),
+                },
             )
     }
 
@@ -547,8 +545,15 @@ impl ClobClient {
         Ok(req.json(&body).send().await?.json::<Value>().await?)
     }
 
-    pub async fn create_and_post_order(&self, order_args: &OrderArgs) -> ClientResult<Value> {
-        let order = self.create_order(order_args, None, None, None).await?;
+    pub async fn create_and_post_order(
+        &self,
+        order_args: &OrderArgs,
+        tick_size: Decimal,
+        neg_risk: bool,
+    ) -> ClientResult<Value> {
+        let order = self
+            .create_order(order_args, None, None, tick_size, neg_risk)
+            .await?;
         self.post_order(order, OrderType::GTC).await
     }
 
@@ -879,7 +884,10 @@ impl ClobClient {
             .await?)
     }
 
-    pub async fn get_sampling_markets(&self, next_cursor: Option<&str>) -> ClientResult<MarketsResponse> {
+    pub async fn get_sampling_markets(
+        &self,
+        next_cursor: Option<&str>,
+    ) -> ClientResult<MarketsResponse> {
         let next_cursor = next_cursor.unwrap_or(INITIAL_CURSOR);
 
         Ok(self
