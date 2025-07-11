@@ -124,8 +124,13 @@ impl ClobClient {
             order_builder: Some(OrderBuilder::new(signer, signature_type, funder_address)),
         }
     }
+    
     pub fn set_api_creds(&mut self, api_creds: ApiCreds) {
         self.api_creds = Some(api_creds);
+    }
+
+    pub fn get_api_creds(&self) -> Option<&ApiCreds> {
+        self.api_creds.as_ref()
     }
 
     #[inline]
