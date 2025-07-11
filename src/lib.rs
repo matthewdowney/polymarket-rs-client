@@ -419,7 +419,7 @@ impl ClobClient {
         true
     }
 
-    pub async fn create_order(
+    pub fn create_order(
         &self,
         order_args: &OrderArgs,
         expiration: Option<u64>,
@@ -571,9 +571,7 @@ impl ClobClient {
         tick_size: Decimal,
         neg_risk: bool,
     ) -> ClientResult<Value> {
-        let order = self
-            .create_order(order_args, None, None, tick_size, neg_risk)
-            .await?;
+        let order = self.create_order(order_args, None, None, tick_size, neg_risk)?;
         self.post_order(order, OrderType::GTC).await
     }
 
