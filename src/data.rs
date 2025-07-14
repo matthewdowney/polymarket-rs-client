@@ -91,7 +91,7 @@ impl TradeParams {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct OpenOrder {
     pub associate_trades: Vec<String>,
     pub id: String,
