@@ -113,7 +113,6 @@ pub struct OpenOrder {
     pub asset_id: String,
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub expiration: u64,
-    #[serde(rename = "type")]
     pub order_type: OrderType,
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub created_at: u64,

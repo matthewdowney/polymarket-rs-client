@@ -124,7 +124,7 @@ impl ClobClient {
             order_builder: Some(OrderBuilder::new(signer, signature_type, funder_address)),
         }
     }
-    
+
     pub fn set_api_creds(&mut self, api_creds: ApiCreds) {
         self.api_creds = Some(api_creds);
     }
@@ -660,7 +660,7 @@ impl ClobClient {
                 .http_client
                 .request(method.clone(), format!("{}{endpoint}", &self.host))
                 .query(&query_params)
-                .query(&["next_cursor", &next_cursor]);
+                .query(&[("next_cursor", &next_cursor)]);
 
             let r = headers
                 .clone()
@@ -745,7 +745,7 @@ impl ClobClient {
                 .http_client
                 .request(method.clone(), format!("{}{endpoint}", &self.host))
                 .query(&query_params)
-                .query(&["next_cursor", &next_cursor]);
+                .query(&[("next_cursor", &next_cursor)]);
 
             let r = headers
                 .clone()
