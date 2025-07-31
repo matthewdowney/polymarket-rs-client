@@ -50,6 +50,12 @@ impl ClobClient {
             ..Default::default()
         }
     }
+
+    /// Set a custom reqwest client.
+    pub fn set_http_client(&mut self, http_client: Client) {
+        self.http_client = http_client;
+    }
+
     pub fn with_l1_headers(host: &str, key: &str, chain_id: u64) -> Self {
         let signer = Box::new(
             key.parse::<PrivateKeySigner>()
